@@ -37,7 +37,7 @@ spec:
           - name: ELASTICSEARCH_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: elastic-kibana-secrets
+                name: db-credentials
                 key: KIBANA_PASSWORD
           - name: TELEMETRY_ENABLED
             value: "false"
