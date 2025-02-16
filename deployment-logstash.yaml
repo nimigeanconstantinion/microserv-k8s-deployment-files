@@ -34,7 +34,8 @@ spec:
           - name: ELASTIC_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: elastic-kibana-secrets
+                # name: elastic-kibana-secrets
+                name: db-credentials
                 key: ELASTIC_PASSWORD
         volumeMounts:
           - name: logstash-pipeline-volume
@@ -42,7 +43,7 @@ spec:
       volumes:
         - name: logstash-pipeline-volume
           configMap:
-            name: logstash-pipeline-cm
+            name: app-config
             items:
               - key: logstash.conf
                 path: logstash.conf

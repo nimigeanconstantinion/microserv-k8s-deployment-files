@@ -13,12 +13,12 @@ spec:
           - name: ELASTIC_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: elastic-kibana-secrets
+                name: db-credentials
                 key: ELASTIC_PASSWORD
           - name: KIBANA_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: elastic-kibana-secrets
+                name: db-credentials
                 key: KIBANA_PASSWORD
         command: [ "bash", "-c" ]
         args:

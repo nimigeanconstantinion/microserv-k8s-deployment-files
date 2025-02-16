@@ -38,7 +38,7 @@ spec:
           - name: ELASTIC_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: elastic-kibana-secrets
+                name: db-credentials
                 key: ELASTIC_PASSWORD
           - name: discovery.type
             value: single-node
