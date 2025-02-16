@@ -1,0 +1,35 @@
+###############################################################################
+# 1. Persistent Volume (PV)
+###############################################################################
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: rabbitmq-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /data/rabbitmq  # Path on the node(s) where data is stored.
+  # If using a specific StorageClass or CSI driver, adapt accordingly.
+  # storageClassName: my-storage-class
+
+---
+###############################################################################
+# 2. Persistent Volume Claim (PVC)
+###############################################################################
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rabbitmq-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  # volumeName: rabbitmq-pv  # Binds to the above PV by name.
+  # If using dynamic provisioning, remove volumeName and specify storageClassName
+  # storageClassName: my-storage-class
+

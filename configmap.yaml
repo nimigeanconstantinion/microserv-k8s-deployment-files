@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: default
+data:
+  my.cnf: |
+    [mysqld]
+    max_allowed_packet=100M
+  DB_HOST: "mysql"
+  DB_NAME: "testdb"
+  DB_USER: "testuser"
+  config.json: |
+    {
+      "BASE_URL": "http://react-app.local/ui",
+      "REACT_APP_API_URL": "http://react-app.local"
+    }
+  logstash.conf: |
+    input {
+      tcp {
+        port => 3100
+        codec => json_lines
+      }
+    }
+    filter {
+      grok {
+        match => {
+          "message" => "cmdUpd: Optional\\[id:%{NUMBER:commUpd.id};articol:%{DATA:commUpd.articol};id_furniz:%{NUMBER:commUpd.id_furniz};furnizor:%{DATA:commUpd.furnizor};nr_zile:%{NUMBER:commUpd.nr_zile}\\]\\."
+        }
+      }
+    }
+    output {
+      elasticsearch {
+        hosts => ["http://elasticsearch:9200"]
+        user => "elastic"
+        # References environment variable $ELASTIC_PASSWORD
+        password => "${ELASTIC_PASSWORD}"
+        ssl => false
+      }
+    }
+  

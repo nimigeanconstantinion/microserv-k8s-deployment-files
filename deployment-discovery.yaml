@@ -1,0 +1,48 @@
+---
+###############################################################################
+# 3. Deployment with Recreate Strategy
+###############################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: discovery-service
+  labels:
+    app: discovery-service
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate  # Tear down old Pod before starting a new one
+  selector:
+    matchLabels:
+      app: discovery-service
+  template:
+    metadata:
+      labels:
+        app: discovery-service
+    spec:
+      containers:
+        - name: discovery-container
+          image: ion21/newdiscovery:01.07.2024.14.39.29
+          ports:
+            - containerPort: 8761   # AMQP
+          env:
+            - name: SPRING_ZIPKIN_BASE_URL
+              value: "http://zipkin:9411"
+
+---
+###############################################################################
+# 4. Service
+###############################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: discovery-service
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: discovery-service
+  ports:
+    - port: 8761
+      targetPort: 8761
+      name: netflix-port

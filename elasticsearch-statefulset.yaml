@@ -1,0 +1,61 @@
+# elasticsearch-statefulset.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+spec:
+  ports:
+    - port: 9200
+      name: http
+      targetPort: 9200
+  clusterIP: None 
+  selector:
+    app: elasticsearch
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elasticsearch
+spec:
+  serviceName: elasticsearch
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+      - name: elasticsearch
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.12.1
+        ports:
+          - containerPort: 9200
+            name: http
+        env:
+          - name: ELASTIC_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: elastic-kibana-secrets
+                key: ELASTIC_PASSWORD
+          - name: discovery.type
+            value: single-node
+          - name: cluster.name
+            value: elasticsearch
+          - name: bootstrap.memory_lock
+            value: "true"      # Optional
+          - name: xpack.security.enabled
+            value: "true"
+          - name: xpack.security.http.ssl.enabled
+            value: "false"
+          - name: ES_JAVA_OPTS
+            value: "-Xms1g -Xmx1g"
+        volumeMounts:
+          - name: es-data
+            mountPath: /usr/share/elasticsearch/data
+      volumes:
+          - name: es-data
+            persistentVolumeClaim:
+              claimName: es-pvc
