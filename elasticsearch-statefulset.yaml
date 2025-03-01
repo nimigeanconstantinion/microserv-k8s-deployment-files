@@ -1,18 +1,3 @@
-# elasticsearch-statefulset.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: elasticsearch
-spec:
-  ports:
-    - port: 9200
-      name: http
-      targetPort: 9200
-  clusterIP: None 
-  selector:
-    app: elasticsearch
-
----
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -59,3 +44,19 @@ spec:
           - name: es-data
             persistentVolumeClaim:
               claimName: es-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+  labels:
+    app: elasticsearch
+spec:
+  clusterIP: None
+  selector:
+    app: elasticsearch
+  ports:
+    - name: http
+      port: 9200
+    - name: transport
+      port: 9300
